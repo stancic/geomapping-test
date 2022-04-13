@@ -1,8 +1,12 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
-const Home: NextPage = () => {
+interface Props {
+  data: MapData[];
+}
+
+const Home: NextPage<Props> = ({ data }) => {
   const MapNoSSR = dynamic(() => import('modules/map/MapNoSSR'), {
     ssr: false,
   });
@@ -14,9 +18,16 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <MapNoSSR />
+      <MapNoSSR mapData={data} />
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const response = await fetch('https://dinomapping.herokuapp.com/maps/all/');
+  const data: MapData[] = await response.json();
+
+  return { props: { data } };
 };
 
 export default Home;

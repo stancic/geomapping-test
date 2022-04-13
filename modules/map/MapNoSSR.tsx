@@ -3,27 +3,12 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Region } from './components';
 
-const MapNoSSR = () => {
-  const [mapData, setMapData] = useState<MapData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface Props {
+  mapData: MapData[];
+}
 
-  useEffect(() => {
-    async function dataFetch() {
-      const response = await fetch(
-        'http://dinomapping.herokuapp.com/maps/all/'
-      );
-      const data = await response.json();
-
-      setMapData(data);
-    }
-    dataFetch();
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
-
-  if (isLoading) return null;
+const MapNoSSR: React.FC<Props> = ({ mapData }) => {
+  if (!mapData) return <h1>Loading...</h1>;
 
   return (
     <MapContainer
