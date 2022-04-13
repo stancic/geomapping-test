@@ -1,35 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Polygon } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-
-interface MapData {
-  id: number;
-  id_map: string;
-  name: string;
-  org_code: string;
-}
+import { Region } from './components';
 
 const MapNoSSR = () => {
-  const [mapData, setMapData] = useState<[]>([]);
+  const [mapData, setMapData] = useState<MapData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const multiPolygon = [
-    [
-      [51.51, -0.12],
-      [51.51, -0.13],
-      [51.53, -0.13],
-    ],
-    [
-      [51.51, -0.05],
-      [51.51, -0.07],
-      [51.53, -0.07],
-    ],
-  ];
 
   useEffect(() => {
     async function dataFetch() {
       const response = await fetch(
-        'http://martinjc.github.io/UK-GeoJSON/json/eng/topo_lad.json'
+        'http://dinomapping.herokuapp.com/maps/all/'
       );
       const data = await response.json();
 
@@ -41,8 +22,6 @@ const MapNoSSR = () => {
   useEffect(() => {
     setIsLoading(false);
   }, []);
-
-  console.log(mapData);
 
   if (isLoading) return null;
 
@@ -58,7 +37,9 @@ const MapNoSSR = () => {
         attribution='<href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>|<a href="https://www.openstreetmap.org/copyright\" target="_blank">OpenStreetMap contributors</a>'
         url='https://api.maptiler.com/maps/bright/{z}/{x}/{y}.png?key=cnOAqKquJXFHWgw6xeye'
       />
-      <Polygon positions={multiPolygon} />
+      {mapData.map((data) => (
+        <Region key={data.id_map} mapData={data} />
+      ))}
     </MapContainer>
   );
 };
